@@ -1,0 +1,6 @@
+{
+  "presets": ["@babel/preset-env"]
+}
+// preset은 플러그인이다.
+// 여기 preset-env을 사용하면 최신 자바스크립트의 구문을 사용할 수 있게 된다.
+// preset-env는 package.json 파일에 devDependencies객체안에 담겨져있다.()
