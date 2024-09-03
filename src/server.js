@@ -11,6 +11,9 @@ const app = express();
 const logger = morgan("dev");
 app.use(logger);
 
+//퍼그 사용 설정
+app.set("view engine", "pug");
+app.set("views", process.cwd() + "/src/views");
 //router기본경로들
 app.use("/", globalRouter);
 app.use("/users", userRouter);
