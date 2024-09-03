@@ -11,6 +11,7 @@ const app = express();
 const logger = morgan("dev");
 app.use(logger);
 
+//router기본경로들
 app.use("/", globalRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
