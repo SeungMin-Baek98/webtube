@@ -1,0 +1,13 @@
+// 각 페이지별로 content를 수정하기 귀찮으니 import하여서 각 페이지별로 내용만 다르게 사용
+doctype html
+html(lang="ko")
+    head
+        title #{pageTitle} | Wetube
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    body
+        header
+            h1=pageTitle 
+        main 
+            block content
+    include partials/footer.pug
+    

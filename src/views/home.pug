@@ -1,8 +1,8 @@
-doctype html
-html(lang="en")
-    head
-        title Wetube
-        
-    body
-        h1 Welcome to Wetube!
+extends base.pug
+include mixins/videoMixin
 
+block content
+    h1 Welcome here you will see trending videos 
+
+    each video in videos
+        +videoMixin(video)     
