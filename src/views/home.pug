@@ -3,6 +3,9 @@ include mixins/videoMixin
 
 block content
     h1 Welcome here you will see trending videos 
-
+    nav
+        ul 
+            li 
+                a(href="/videos/upload") Video Upload 
     each video in videos
         +videoMixin(video)     

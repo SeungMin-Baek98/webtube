@@ -9,11 +9,14 @@ const PORT = 4000;
 
 const app = express();
 const logger = morgan("dev");
+
 app.use(logger);
+app.use(express.urlencoded({ express: true }));
 
 //퍼그 사용 설정
 app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
+
 //router기본경로들
 app.use("/", globalRouter);
 app.use("/users", userRouter);
