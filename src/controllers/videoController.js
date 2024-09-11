@@ -13,15 +13,17 @@ export const watch = async (req, res) => {
   return res.render("watch", { pageTitle: `Watching`, video });
 };
 
-export const getEdit = (req, res) => {
-  const { id } = req.params;
-
+export const getEdit = async (req, res) => {
+  let { id } = req.params;
+  const videoEdit = await videoModel.updateOne(id);
+  console.log(videoEdit);
   return res.render("edit", {
-    pageTitle: `Editing: `,
+    pageTitle: `Editing: ${videoEdit.title} `,
+    videoEdit,
   });
 };
 
-export const postEdit = (req, res) => {
+export const postEdit = async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
 
