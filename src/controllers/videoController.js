@@ -1,74 +1,54 @@
-let videos = [
-  {
-    title: "First Video",
-    rating: 5,
-    comments: 3,
-    createdAt: "2 minutes ago",
-    views: 1,
-    id: 1,
-  },
-  {
-    title: "Second Video",
-    rating: 9,
-    comments: 12,
-    createdAt: "2 years ago",
-    views: 80,
-    id: 2,
-  },
-  {
-    title: "Third Video",
-    rating: 2,
-    comments: 1,
-    createdAt: "2 months ago",
-    views: 20,
-    id: 3,
-  },
-];
+import videoModel from "../models/videoModel";
 
-export const trending = (req, res) => {
-  return res.render("home", { pageTitle: "Home", videos });
+export const home = async (req, res) => {
+  const videos = await videoModel.find({});
+  console.log(videos);
+  return res.render("Home", { pageTitle: "Home", videos });
 };
 
-export const watch = (req, res) => {
+export const watch = async (req, res) => {
   const { id } = req.params;
-  const videoId = videos[id - 1];
-  return res.render("watch", {
-    pageTitle: `Watching: ${videoId.title}`,
-    videoId,
-  });
+  const video = await videoModel.findById(id);
+  console.log(video);
+  return res.render("watch", { pageTitle: `Watching`, video });
 };
 
 export const getEdit = (req, res) => {
   const { id } = req.params;
-  const videoId = videos[id - 1];
+
   return res.render("edit", {
-    pageTitle: `Editing: ${videoId.title}`,
-    videoId,
+    pageTitle: `Editing: `,
   });
 };
 
 export const postEdit = (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
-  videos[id - 1].title = title;
+
   return res.redirect(`/videos/${id}`);
 };
 
 export const getUpload = (req, res) => {
   return res.render("upload", { pageTitle: "Upload Video" });
 };
-export const postUpload = (req, res) => {
-  const { title } = req.body;
-  const newVideo = {
-    title,
-    rating: 0,
-    comments: 0,
-    createdAt: "just now",
-    views: 0,
-    id: videos.length + 1,
-  };
-  videos.push(newVideo);
-  return res.redirect("/");
+
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+  // video생성에 문제가 없다면 / <- Home 페이지로 리다이렉트 될 것 이다.
+  try {
+    await videoModel.create({
+      title,
+      description,
+      createdAt: Date.now(),
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+    });
+    return res.redirect("/");
+  } catch (error) {
+    // 오류가 있다면 upload 페이지에 남아 있을 것 이다.
+    console.log("error", error);
+    return res.render("upload", {
+      pageTitle: "Upload Video",
+      errorMessage: error._message,
+    });
+  }
 };
-export const search = (req, res) => res.send("Search");
-export const deleteVideo = (req, res) => res.send("DeleteVideo");
