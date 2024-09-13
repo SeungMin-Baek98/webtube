@@ -2,7 +2,7 @@ extends base.pug
 include mixins/videoMixin
 
 block content
-    h1 Welcome here you will see trending videos 
-
     each video in videos
         +videoMixin(video)     
+    else 
+        h1 영상 데이터가 없습니다😭😭
