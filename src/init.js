@@ -1,6 +1,7 @@
 // 몽고db연결 페이지
 import "./db";
 import "./models/videoModel";
+import "./models/userModel";
 import app from "./server";
 
 //서버 생성
