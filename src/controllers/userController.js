@@ -17,12 +17,26 @@ export const postJoin = async (req, res) => {
     });
   }
 
-  const exists = await userModel.exists({ $or: [{ username }, { email }] });
+  const existUsername = await userModel.exists(username);
+  const existEmail = await userModel.exists(email);
+  const existNickname = await userModel.exists(nickname);
 
-  if (exists) {
+  if (existUsername) {
     return res.status(400).render("join", {
       pageTitle,
-      errorMessage: "이메일 혹은 이름이 사용중입니다.",
+      errorMessage: "귀하의 아이디가 사용중입니다.",
+    });
+  }
+  if (existEmail) {
+    return res.status(400).render("join", {
+      pageTitle,
+      errorMessage: "귀하의 이메일이 사용중입니다.",
+    });
+  }
+  if (existNickname) {
+    return res.status(400).render("join", {
+      pageTitle,
+      errorMessage: "귀하의 닉네임이 사용중입니다.",
     });
   }
 

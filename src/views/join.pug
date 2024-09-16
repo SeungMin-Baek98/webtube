@@ -5,14 +5,16 @@ block content
         span=errorMessage 
 
     form(method="POST")
-        input(name="email", type="email",  placeholder="Email",required)
-        input(name="username", type="text",  placeholder="Username" , required)
-        input(name="password", type="password",  placeholder="Password" , required) 
-        input(name="rePassword", type="password",  placeholder="Confirm Password" , required) 
-        input(name="name", type="text",  placeholder="Name" , required) 
-        input(name="nickname" type="text", placeholder="Nickname", required)
-        input(name="location", type="text",  placeholder="Location" , required) 
-        input(type="submit" value="Join")    
+        input(name="email", type="email",  placeholder="이메일",required)
+        input(name="username", type="text",  placeholder="아이디" , required)
+        input(name="password", type="password",  placeholder="비밀번호" , required) 
+        input(name="rePassword", type="password",  placeholder="비밀번호 재확인" , required) 
+        input(name="name", type="text",  placeholder="성함" , required) 
+        input(name="nickname" type="text", placeholder="닉네임", required)
+        input(name="location", type="text",  placeholder="거주지" , required) 
+        a(href="/") 뒤로가기 
+        input(type="submit" value="가입하기")    
+        
 
     div 
         span 이미 계정이 있습니까?
