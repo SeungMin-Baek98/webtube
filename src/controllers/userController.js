@@ -6,7 +6,8 @@ export const getJoin = (req, res) => {
 };
 
 export const postJoin = async (req, res) => {
-  const { email, username, password, rePassword, name, location } = req.body;
+  const { email, username, nickname, password, rePassword, name, location } =
+    req.body;
   const pageTitle = "Join";
 
   if (password !== rePassword) {
@@ -30,8 +31,9 @@ export const postJoin = async (req, res) => {
     await userModel.create({
       email,
       username,
-      password,
       name,
+      nickname,
+      password,
       location,
     });
     return res.redirect("/login");
