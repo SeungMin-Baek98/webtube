@@ -3,7 +3,7 @@ import videoModel from "../models/videoModel";
 export const home = async (req, res) => {
   const videos = await videoModel.find({});
   console.log(videos);
-  return res.render("Home", { pageTitle: "Home", videos });
+  return res.status(404).render("Home", { pageTitle: "Home", videos });
 };
 
 export const watch = async (req, res) => {
@@ -11,7 +11,7 @@ export const watch = async (req, res) => {
   const video = await videoModel.findById(id);
   console.log(video);
   if (video === null) {
-    return res.render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
+    return res.status(404).render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
   }
   return res.render("watch", { pageTitle: `Watching`, video });
 };
@@ -68,7 +68,7 @@ export const postUpload = async (req, res) => {
   } catch (error) {
     // 오류가 있다면 upload 페이지에 남아 있을 것 이다.
     console.log("error", error);
-    return res.render("upload", {
+    return res.status(400).render("upload", {
       pageTitle: "Upload Video",
       errorMessage: error._message,
     });
