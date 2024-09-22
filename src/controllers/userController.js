@@ -1,5 +1,6 @@
 import userModel from "../models/userModel";
 import bcyrpt from "bcrypt";
+import session from "express-session";
 
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
@@ -9,17 +10,9 @@ export const postJoin = async (req, res) => {
   const { email, username, nickname, password, rePassword, name, location } =
     req.body;
   const pageTitle = "Join";
-
-  if (password !== rePassword) {
-    return res.status(400).render("join", {
-      pageTitle,
-      errorMessage: "비밀번호가 일치하지 않습니다.",
-    });
-  }
-
-  const existUsername = await userModel.exists(username);
-  const existEmail = await userModel.exists(email);
-  const existNickname = await userModel.exists(nickname);
+  const existUsername = await userModel.exists({ username });
+  const existEmail = await userModel.exists({ email });
+  const existNickname = await userModel.exists({ nickname });
 
   if (existUsername) {
     return res.status(400).render("join", {
@@ -37,6 +30,12 @@ export const postJoin = async (req, res) => {
     return res.status(400).render("join", {
       pageTitle,
       errorMessage: "귀하의 닉네임이 사용중입니다.",
+    });
+  }
+  if (password !== rePassword) {
+    return res.status(400).render("join", {
+      pageTitle,
+      errorMessage: "비밀번호가 일치하지 않습니다.",
     });
   }
 
@@ -79,7 +78,12 @@ export const postLogin = async (req, res) => {
       errorMessage: "패스워드가 일치하지않습니다.",
     });
   }
-  res.end();
+
+  // 실질적으로 세션을 초기화하는 부분이다.
+  req.session.loggedIn = true;
+  req.session.user = loginUser;
+
+  return res.redirect("/");
 };
 
 export const edit = (req, res) => res.send("Edit");
