@@ -9,8 +9,6 @@ import videoRouter from "../src/routers/videoRouter";
 
 import { localsMiddelware } from "./middlewares";
 
-require("dotenv").config();
-
 const app = express();
 const logger = morgan("dev");
 
