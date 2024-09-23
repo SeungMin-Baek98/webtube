@@ -121,6 +121,7 @@ export const finishGithubLogin = async (req, res) => {
   };
   const params = new URLSearchParams(config).toString();
   const finalUrl = `${baseUrl}?${params}`;
+
   const tokenRequest = await (
     await fetch(finalUrl, {
       method: "POST",
@@ -141,6 +142,7 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
+
     console.log(userData);
 
     const emailData = await (
@@ -150,6 +152,7 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
+
     console.log(emailData);
 
     // 깃허브 계정이 있을때 그 메일의 primary 및 verified 가 true 일 경우
@@ -177,8 +180,10 @@ export const finishGithubLogin = async (req, res) => {
         socialLogin: true,
       });
     }
+
     req.session.loggedIn = true;
     req.session.user = user;
+
     return res.redirect("/");
   } else {
     return res.redirect("/login");
