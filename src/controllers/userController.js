@@ -1,5 +1,5 @@
 import userModel from "../models/userModel";
-import bcyrpt from "bcrypt";
+import bcrypt from "bcrypt";
 import fetch from "node-fetch";
 
 export const getJoin = (req, res) => {
@@ -7,13 +7,11 @@ export const getJoin = (req, res) => {
 };
 
 export const postJoin = async (req, res) => {
-  const { email, username, nickname, password, rePassword, name, location } =
-    req.body;
-  const pageTitle = "Join";
+  const { email, username, password, rePassword, name, location } = req.body;
 
+  const pageTitle = "Join";
   const existUsername = await userModel.exists({ username });
   const existEmail = await userModel.exists({ email });
-  const existNickname = await userModel.exists({ nickname });
 
   if (existUsername) {
     return res.status(400).render("join", {
@@ -26,13 +24,6 @@ export const postJoin = async (req, res) => {
     return res.status(400).render("join", {
       pageTitle,
       errorMessage: "귀하의 이메일이 사용중입니다.",
-    });
-  }
-
-  if (existNickname) {
-    return res.status(400).render("join", {
-      pageTitle,
-      errorMessage: "귀하의 닉네임이 사용중입니다.",
     });
   }
 
@@ -49,9 +40,8 @@ export const postJoin = async (req, res) => {
       email,
       username,
       name,
-      nickname,
-      password,
       location,
+      password,
     });
     return res.redirect("/login");
   } catch (error) {
@@ -76,7 +66,7 @@ export const postLogin = async (req, res) => {
       .render("login", { pageTitle, errorMessage: "계정이 없습니다." });
   }
 
-  const loginPass = await bcyrpt.compare(password, loginUser.password);
+  const loginPass = await bcrypt.compare(password, loginUser.password);
   if (!loginPass) {
     return res.status(400).render("login", {
       pageTitle,
