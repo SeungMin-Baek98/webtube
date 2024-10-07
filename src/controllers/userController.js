@@ -185,6 +185,52 @@ export const logout = (req, res) => {
   return res.redirect("/");
 };
 
-export const edit = (req, res) => res.send("Edit");
-export const remove = (req, res) => res.send("DeleteUser");
-export const see = (req, res) => res.send("see");
+export const startKaKaoLogin = (req, res) => {
+  return res.send("KaKao");
+};
+export const finishKaKaoLogin = (req, res) => {
+  return res.send("KaKao");
+};
+
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+export const postEdit = async (req, res) => {
+  // 로그인된 User의 id를 얻기위해서는
+  // request object의 req.session.user에서
+  // 찾을 수 있다.
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { name, username, email, location },
+  } = req;
+
+  const existUsername = await userModel.exists({ username, _id: { $ne: _id } });
+  if (existUsername) {
+    return res.status(400).render("edit", {
+      pageTitle: "Edit Profile",
+      errorMessage: "귀하의 이메일이 사용중입니다.",
+    });
+  }
+  const existEmail = await userModel.exists({ email, _id: { $ne: _id } });
+  if (existEmail) {
+    return res.status(400).render("edit", {
+      pageTitle: "Edit Profile",
+      errorMessage: "귀하의 이메일이 사용중입니다.",
+    });
+  }
+
+  const updateUser = await userModel.findByIdAndUpdate(
+    _id,
+    {
+      name,
+      username,
+      email,
+      location,
+    },
+    { new: true }
+  );
+  req.session.user = updateUser;
+  return res.redirect("/users/edit");
+};
