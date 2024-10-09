@@ -54,12 +54,18 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
+  const {
+    user: { _id },
+  } = req.session;
+  const file = req.file;
   const { title, description, hashtags } = req.body;
 
   // video생성에 문제가 없다면 / <- Home 페이지로 리다이렉트 될 것 이다.
   try {
     await videoModel.create({
+      fileUrl: file.path,
       title,
+      owner: _id,
       description,
       hashtags: videoModel.formatHashtags(hashtags),
     });

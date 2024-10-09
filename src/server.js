@@ -39,8 +39,10 @@ app.set("views", process.cwd() + "/src/views");
 
 //router기본경로들
 app.use(localsMiddelware);
+
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
+app.use("/uploads", express.static("uploads"));
 
 export default app;
