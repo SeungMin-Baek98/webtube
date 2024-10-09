@@ -7,9 +7,17 @@ import {
   startKaKaoLogin,
   finishKaKaoLogin,
   logout,
+  getChangePassword,
+  postChangePassword,
 } from "../controllers/userController";
+
+import {
+  avatarUpload,
+  protectorMiddleware,
+  publicOnlyMiddleware,
+} from "../middlewares";
+
 import express from "express";
-import { protectorMiddleware, publicOnlyMiddleware } from "../middlewares";
 
 const userRouter = express.Router();
 
@@ -23,8 +31,19 @@ userRouter.get("/github/finish", finishGithubLogin);
 userRouter.get("/kakao/start", publicOnlyMiddleware, startKaKaoLogin);
 userRouter.get("/kakao/finish", publicOnlyMiddleware, finishKaKaoLogin);
 
-// userRouter.get("/:id", see);
+//유저 프로필 편집 라우터
+userRouter
+  .route("/edit")
+  .all(protectorMiddleware)
+  .get(getEdit)
+  .post(avatarUpload.single("avatar"), postEdit);
 
-userRouter.route("/edit").all(protectorMiddleware).get(getEdit).post(postEdit);
+userRouter
+  .route("/change-password")
+  .all(protectorMiddleware)
+  .get(getChangePassword)
+  .post(postChangePassword);
+
+userRouter.get("/:id", see);
 
 export default userRouter;

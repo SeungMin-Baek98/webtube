@@ -8,14 +8,16 @@ html(lang="ko")
         header
             h1=pageTitle 
             if loggedIn 
-                span 환영합니다 #{loggedInUser.username} 님 
+                span 환영합니다 #{loggedInUser.name} 님 
             nav
                 ul 
                     li   
                         a(href="/") Home
-                    if loggedIn
+                    if loggedIn          
                         li 
                             a(href="/videos/upload") Video Upload     
+                        li  
+                            a(href=`/users/${loggedInUser._id}`) #{loggedInUser.name} 님의 프로필
                         li 
                             a(href="/users/edit") Edit Profile
                         li

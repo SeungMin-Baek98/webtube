@@ -1,3 +1,5 @@
+import multer from "multer";
+
 // pug template 과 user data 공유
 export const localsMiddelware = (req, res, next) => {
   //loggedIn은 유저가 로그인 할 때 session에 저장되는 정보이다. (Boolean 타입으로서 true / false)
@@ -30,3 +32,16 @@ export const publicOnlyMiddleware = (req, res, next) => {
     return res.redirect("/");
   }
 };
+
+export const avatarUpload = multer({
+  dest: "uploads/avatar",
+  limits: {
+    fileSize: 3000000,
+  },
+});
+export const videoUpload = multer({
+  dest: "uploads/videos/",
+  limits: {
+    fileSize: 10000000,
+  },
+});

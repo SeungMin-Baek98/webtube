@@ -201,9 +201,10 @@ export const postEdit = async (req, res) => {
   // 찾을 수 있다.
   const {
     session: {
-      user: { _id },
+      user: { _id, avatarUrl },
     },
     body: { name, username, email, location },
+    file,
   } = req;
 
   const existUsername = await userModel.exists({ username, _id: { $ne: _id } });
@@ -224,6 +225,7 @@ export const postEdit = async (req, res) => {
   const updateUser = await userModel.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl,
       name,
       username,
       email,
@@ -233,4 +235,50 @@ export const postEdit = async (req, res) => {
   );
   req.session.user = updateUser;
   return res.redirect("/users/edit");
+};
+
+export const getChangePassword = (req, res) => {
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id, password },
+    },
+    body: { oldPassword, newPassword, newPasswordRechecked },
+  } = req;
+
+  const matchPassword = await bcrypt.compare(oldPassword, password);
+  if (!matchPassword) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "기존의 비밀번호가 틀립니다.",
+    });
+  }
+
+  if (newPassword !== newPasswordRechecked) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "새로운 비밀번호가 다릅니다.",
+    });
+  }
+
+  const user = await userModel.findById(_id);
+  user.password = newPassword;
+  await user.save();
+  return res.redirect("/users/logout");
+};
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const loginUser = await userModel.findById(id);
+  if (!loginUser) {
+    return res
+      .status(404)
+      .render("404", { pageTitle: "로그인된 유저가 없습니다!" });
+  }
+  return res.render("users/profile", {
+    pageTitle: `${loginUser.name}님의 프로필`,
+    loginUser,
+  });
 };
