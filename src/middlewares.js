@@ -8,7 +8,7 @@ export const localsMiddelware = (req, res, next) => {
   //local 덕분에 우리는 현재 로그인한 유저의 정보를
   //다른 template에서 변수로서 사용할 수 있다.
   //loggedInUser를 사용함으로서.
-  res.locals.loggedInUser = req.session.user;
+  res.locals.loggedInUser = req.session.user || {};
   res.locals.siteName = "Wetube";
   next();
 };

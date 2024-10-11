@@ -1,6 +1,7 @@
 import userModel from "../models/userModel";
 import bcrypt from "bcrypt";
 import fetch from "node-fetch";
+import videoModel from "../models/videoModel";
 
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
@@ -271,7 +272,7 @@ export const postChangePassword = async (req, res) => {
 
 export const see = async (req, res) => {
   const { id } = req.params;
-  const loginUser = await userModel.findById(id);
+  const loginUser = await userModel.findById(id).populate("videos");
   if (!loginUser) {
     return res
       .status(404)
