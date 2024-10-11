@@ -5,9 +5,6 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   username: { type: String, required: true, unique: true },
 
-  // socialLogin 이 false면 유저는 깃허브 로그인유저가 아니므로 아이디 비번으로 로그인을 할 수 있다,
-  // socialLogin 이 true면 유저는 깃허브 로그인유저 이므로 깃허브 아이디로 로그인 할 수 있다.
-  // 또한 socialLogin 이 true면 password가 공백으로 만들어지므로 비밀번호도 따로 필요없다.
   socialLogin: { type: Boolean, default: false },
   name: { type: String, required: true },
 
@@ -15,11 +12,20 @@ const userSchema = new mongoose.Schema({
 
   avatarUrl: String,
   location: String,
+  //user당 여러개의 videos를 생성할 수 있으므로 videos는 배열로서 만들어져야된다.
+  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Video" }],
 });
 
 //User가 db에 저장되기 이전에 그정보를 가로채와서 password를 hash된 정보로 저장하는 로직.
 userSchema.pre("save", async function () {
-  this.password = await bcrypt.hash(this.password, 5);
+  //new video를만들때도 save()로직을 통하여 비밀번호 hash로직이 실행이될것이다.
+  //그러면 기존의 비밀번호로는 로그인이 안되는 버그가 발생할것이다.
+  //여기서의 this는 user와 같으므로
+  //isModified()로직을 통하여
+  // 비밀번호만 수정하였을떄 비밀번호가 hashing되게끔 할 수 있다.
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 5);
+  }
 });
 
 const userModel = mongoose.model("User", userSchema);

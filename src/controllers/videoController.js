@@ -1,3 +1,4 @@
+import userModel from "../models/userModel";
 import videoModel from "../models/videoModel";
 
 export const home = async (req, res) => {
@@ -8,21 +9,32 @@ export const home = async (req, res) => {
 
 export const watch = async (req, res) => {
   const { id } = req.params;
-  const video = await videoModel.findById(id);
+  //mongoose의 내장함수인 populate()를 통하여
+  //videoModel 에서 User테이블을 참조하는 owner의 로그인된 유저의 정보를
+  //받아올 수 있다.
+  //직접 변수를 ex) const videoOwner = await userModel.findById(video.owner)를 하지않아도 된다.
+  const video = await videoModel.findById(id).populate("owner");
   console.log(video);
-  if (video === null) {
+  if (!video) {
     return res.status(404).render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
   }
   return res.render("watch", { pageTitle: `Watching`, video });
 };
 
 export const getEdit = async (req, res) => {
-  let { id } = req.params;
+  const { id } = req.params;
+  const {
+    user: { _id },
+  } = req.session;
   // 여기서는 edit 템플릿에 video객체를 보내야하는게 더 적절하므로 findById()를 사용하는게 적절하다.
   const video = await videoModel.findById(id);
 
-  if (video === null) {
-    return res.render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
+  }
+
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
   }
 
   return res.render("edit", {
@@ -33,11 +45,18 @@ export const getEdit = async (req, res) => {
 
 export const postEdit = async (req, res) => {
   const { id } = req.params;
+  const {
+    user: { _id },
+  } = req.session;
   const { title, description, hashtags } = req.body;
-  const video = await videoModel.exists({ _id: id });
+  const video = await videoModel.findById(id);
 
-  if (video === null) {
-    return res.render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "VIDEO NOT FOUND!!😅" });
+  }
+
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
   }
 
   await videoModel.findByIdAndUpdate(id, {
@@ -54,16 +73,24 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
+  const {
+    user: { _id },
+  } = req.session;
+  const file = req.file;
   const { title, description, hashtags } = req.body;
 
   // video생성에 문제가 없다면 / <- Home 페이지로 리다이렉트 될 것 이다.
   try {
-    await videoModel.create({
+    const newVideo = await videoModel.create({
+      fileUrl: file.path,
       title,
+      owner: _id,
       description,
       hashtags: videoModel.formatHashtags(hashtags),
     });
-
+    const user = await userModel.findById(_id);
+    user.videos.unshift(newVideo._id);
+    user.save();
     return res.redirect("/");
   } catch (error) {
     // 오류가 있다면 upload 페이지에 남아 있을 것 이다.
@@ -78,7 +105,23 @@ export const postUpload = async (req, res) => {
 export const deleteVideo = async (req, res) => {
   const { id } = req.params;
   // 게시글 삭제 로직
+  const {
+    user: { _id },
+  } = req.session;
+  const video = await videoModel.findById(id);
+  const loginUser = await userModel.findById(_id);
+
+  if (!video) {
+    return res.status(404).render("404", { pageTitle: "VIdeo not found." });
+  }
+
+  if (String(video.owner) !== String(_id)) {
+    return res.status(403).redirect("/");
+  }
+
   await videoModel.findByIdAndDelete(id);
+  loginUser.videos.splice(loginUser.videos.indexOf(id), 1);
+  loginUser.save();
   return res.redirect("/");
 };
 

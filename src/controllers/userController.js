@@ -1,6 +1,7 @@
 import userModel from "../models/userModel";
 import bcrypt from "bcrypt";
 import fetch from "node-fetch";
+import videoModel from "../models/videoModel";
 
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
@@ -185,6 +186,100 @@ export const logout = (req, res) => {
   return res.redirect("/");
 };
 
-export const edit = (req, res) => res.send("Edit");
-export const remove = (req, res) => res.send("DeleteUser");
-export const see = (req, res) => res.send("see");
+export const startKaKaoLogin = (req, res) => {
+  return res.send("KaKao");
+};
+export const finishKaKaoLogin = (req, res) => {
+  return res.send("KaKao");
+};
+
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+export const postEdit = async (req, res) => {
+  // 로그인된 User의 id를 얻기위해서는
+  // request object의 req.session.user에서
+  // 찾을 수 있다.
+  const {
+    session: {
+      user: { _id, avatarUrl },
+    },
+    body: { name, username, email, location },
+    file,
+  } = req;
+
+  const existUsername = await userModel.exists({ username, _id: { $ne: _id } });
+  if (existUsername) {
+    return res.status(400).render("edit", {
+      pageTitle: "Edit Profile",
+      errorMessage: "귀하의 이메일이 사용중입니다.",
+    });
+  }
+  const existEmail = await userModel.exists({ email, _id: { $ne: _id } });
+  if (existEmail) {
+    return res.status(400).render("edit", {
+      pageTitle: "Edit Profile",
+      errorMessage: "귀하의 이메일이 사용중입니다.",
+    });
+  }
+
+  const updateUser = await userModel.findByIdAndUpdate(
+    _id,
+    {
+      avatarUrl: file ? file.path : avatarUrl,
+      name,
+      username,
+      email,
+      location,
+    },
+    { new: true }
+  );
+  req.session.user = updateUser;
+  return res.redirect("/users/edit");
+};
+
+export const getChangePassword = (req, res) => {
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id, password },
+    },
+    body: { oldPassword, newPassword, newPasswordRechecked },
+  } = req;
+
+  const matchPassword = await bcrypt.compare(oldPassword, password);
+  if (!matchPassword) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "기존의 비밀번호가 틀립니다.",
+    });
+  }
+
+  if (newPassword !== newPasswordRechecked) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "새로운 비밀번호가 다릅니다.",
+    });
+  }
+
+  const user = await userModel.findById(_id);
+  user.password = newPassword;
+  await user.save();
+  return res.redirect("/users/logout");
+};
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const loginUser = await userModel.findById(id).populate("videos");
+  if (!loginUser) {
+    return res
+      .status(404)
+      .render("404", { pageTitle: "로그인된 유저가 없습니다!" });
+  }
+  return res.render("users/profile", {
+    pageTitle: `${loginUser.name}님의 프로필`,
+    loginUser,
+  });
+};

@@ -1,0 +1,6 @@
+extends ../base.pug
+include ../mixins/videoMixin.pug
+
+block content
+    each video in loginUser.videos
+        +videoMixin(video)     

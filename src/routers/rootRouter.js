@@ -1,5 +1,7 @@
 import express from "express";
+
 import { home, search } from "../controllers/videoController";
+import { publicOnlyMiddleware } from "../middlewares";
 import {
   getJoin,
   postJoin,
@@ -12,7 +14,11 @@ const rootRouter = express.Router();
 rootRouter.get("/", home);
 rootRouter.get("/search", search);
 
-rootRouter.route("/join").get(getJoin).post(postJoin);
-rootRouter.route("/login").get(getLogin).post(postLogin);
+rootRouter.route("/join").all(publicOnlyMiddleware).get(getJoin).post(postJoin);
+rootRouter
+  .route("/login")
+  .all(publicOnlyMiddleware)
+  .get(getLogin)
+  .post(postLogin);
 
 export default rootRouter;

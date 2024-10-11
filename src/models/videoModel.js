@@ -15,6 +15,11 @@ const videoSchema = new mongoose.Schema({
     views: { type: Number, required: true, default: 0 },
     rating: { type: Number, required: true, default: 0 },
   },
+  fileUrl: { type: String, required: true },
+  // User 테이블을 직접 참조할 수 있게끔 하기위하여
+  // mongoose에서 제공하는 내장함수인 populate()를 통하여
+  // 코드의 간소화를 할 수 있다.
+  owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
 });
 
 // middleware static logic by using modelSchema
