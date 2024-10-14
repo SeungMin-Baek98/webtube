@@ -1,0 +1,25 @@
+.social__login {
+  display: flex;
+  flex-direction: column;
+  padding-top: 50px;
+  margin-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  .social__btn--github {
+    background-color: #24873a;
+    margin-bottom: 5px;
+    &:hover {
+      background-color: black;
+      border: 1px solid rgba($color: #fff, $alpha: 0.2);
+    }
+  }
+  .social__btn--kakao {
+    color: black;
+    font-weight: bold;
+    background-color: #fee922;
+    &:hover {
+      background-color: black;
+      color: white;
+      border: 1px solid rgba($color: #fff, $alpha: 0.2);
+    }
+  }
+}

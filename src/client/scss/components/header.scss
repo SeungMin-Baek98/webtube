@@ -1,0 +1,41 @@
+header {
+  padding: 20px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .header__logo {
+    color: $red;
+    font-size: 36px;
+    display: flex;
+    .website__name {
+      color: white;
+      margin-left: 5px;
+    }
+  }
+
+  ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    li {
+      margin-left: 30px;
+      font-size: 14px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    i {
+      font-size: 16px;
+    }
+  }
+  .header__btn {
+    background-color: white;
+    color: $bgColor;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  .header__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+}
