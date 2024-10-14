@@ -1,7 +1,6 @@
 import userModel from "../models/userModel";
 import bcrypt from "bcrypt";
 import fetch from "node-fetch";
-import videoModel from "../models/videoModel";
 
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
@@ -181,16 +180,83 @@ export const finishGithubLogin = async (req, res) => {
   }
 };
 
+export const startKaKaoLogin = (req, res) => {
+  const baseUrl = "https://kauth.kakao.com/oauth/authorize";
+  const config = {
+    client_id: process.env.KAKAO_CLIENT_ID,
+    redirect_uri: "http://localhost:4000/users/kakao/finish",
+    response_type: "code",
+    scope: "profile_nickname profile_image account_email",
+  };
+
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  return res.redirect(finalUrl);
+};
+export const finishKaKaoLogin = async (req, res) => {
+  const baseUrl = "https://kauth.kakao.com/oauth/token";
+  const config = {
+    grant_type: "authorization_code",
+    client_id: process.env.KAKAO_CLIENT_ID,
+    client_secret: process.env.KAKAO_CLIENT_SECRET, // 필요 시 설정
+    redirect_uri: "http://localhost:4000/users/kakao/finish",
+    code: req.query.code,
+  };
+
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+
+  // 액세스 토큰 요청
+  const tokenRequest = await (
+    await fetch(finalUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+      },
+    })
+  ).json();
+
+  if ("access_token" in tokenRequest) {
+    const { access_token } = tokenRequest;
+
+    // 사용자 정보 요청
+    const userInfo = await fetch("https://kapi.kakao.com/v2/user/me", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    const userData = await userInfo.json();
+
+    // 새로운 사용자 정보로 세션 생성
+    let user = await userModel.findOne({ email: userData.kakao_account.email });
+    if (!user) {
+      // 신규 사용자인 경우 회원가입 처리
+      user = await userModel.create({
+        email: userData.kakao_account.email,
+        username: userData.kakao_account.profile.nickname,
+        name: userData.kakao_account.profile.nickname,
+        avatarUrl: userData.kakao_account.profile.profile_image_url,
+        password: "", // 소셜 로그인은 비밀번호가 없음
+        socialLogin: true,
+      });
+    }
+
+    // 새로운 세션에 사용자 정보 저장
+    req.session.loggedIn = true;
+    req.session.user = user;
+
+    return res.redirect("/");
+  } else {
+    // 액세스 토큰 요청 실패 시
+    return res.redirect("/login");
+  }
+};
+
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
-};
-
-export const startKaKaoLogin = (req, res) => {
-  return res.send("KaKao");
-};
-export const finishKaKaoLogin = (req, res) => {
-  return res.send("KaKao");
 };
 
 export const getEdit = (req, res) => {
