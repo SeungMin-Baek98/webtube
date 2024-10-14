@@ -2,8 +2,10 @@ import userModel from "../models/userModel";
 import videoModel from "../models/videoModel";
 
 export const home = async (req, res) => {
-  const videos = await videoModel.find({});
-  console.log(videos);
+  const videos = await videoModel
+    .find({})
+    .sort({ createdAt: "desc" })
+    .populate("owner");
   return res.status(404).render("Home", { pageTitle: "Home", videos });
 };
 
@@ -130,11 +132,13 @@ export const search = async (req, res) => {
   let videos = [];
 
   if (keyword) {
-    videos = await videoModel.find({
-      title: {
-        $regex: new RegExp(`${keyword}$`, "i"),
-      },
-    });
+    videos = await videoModel
+      .find({
+        title: {
+          $regex: new RegExp(`${keyword}$`, "i"),
+        },
+      })
+      .populate("owner");
   }
   return res.render("search", { pageTitle: "Search", videos });
 };

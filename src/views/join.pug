@@ -11,11 +11,11 @@ block content
         input(name="password", type="password",  placeholder="비밀번호" , required) 
         input(name="rePassword", type="password",  placeholder="비밀번호 재확인" , required) 
         input(name="location", type="text",  placeholder="거주지" , required) 
-        a(href="/") 뒤로가기 
-        input(type="submit" value="가입하기")    
         
+        input(type="submit" value="가입하기")    
+        include partials/social-login        
 
-    div 
+    div.auth-switch
         span 이미 계정이 있습니까?
         div
             a(href="/login") 로그인 하러가기 &rarr;     

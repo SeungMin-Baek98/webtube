@@ -2,5 +2,11 @@ extends ../base.pug
 include ../mixins/videoMixin.pug
 
 block content
-    each video in loginUser.videos
-        +videoMixin(video)     
+    div.profile__data
+        img(src="/" + loginUser.avatarUrl).avatar
+        h3=loginUser.name
+    div.video-grid    
+        each video in loginUser.videos
+            +videoMixin(video)
+        else 
+            span.empty__message 영상 데이터가 없습니다😭😭

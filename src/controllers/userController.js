@@ -272,7 +272,13 @@ export const postChangePassword = async (req, res) => {
 
 export const see = async (req, res) => {
   const { id } = req.params;
-  const loginUser = await userModel.findById(id).populate("videos");
+  const loginUser = await userModel.findById(id).populate({
+    path: "videos",
+    populate: {
+      path: "owner",
+      model: "User",
+    },
+  });
   if (!loginUser) {
     return res
       .status(404)
