@@ -199,7 +199,6 @@ export const finishKaKaoLogin = async (req, res) => {
   const config = {
     grant_type: "authorization_code",
     client_id: process.env.KAKAO_CLIENT_ID,
-    client_secret: process.env.KAKAO_CLIENT_SECRET, // 필요 시 설정
     redirect_uri: "http://localhost:4000/users/kakao/finish",
     code: req.query.code,
   };
@@ -228,7 +227,7 @@ export const finishKaKaoLogin = async (req, res) => {
     });
 
     const userData = await userInfo.json();
-
+    console.log(userData);
     // 새로운 사용자 정보로 세션 생성
     let user = await userModel.findOne({ email: userData.kakao_account.email });
     if (!user) {
@@ -242,7 +241,6 @@ export const finishKaKaoLogin = async (req, res) => {
         socialLogin: true,
       });
     }
-
     // 새로운 세션에 사용자 정보 저장
     req.session.loggedIn = true;
     req.session.user = user;

@@ -33,6 +33,24 @@ export const publicOnlyMiddleware = (req, res, next) => {
   }
 };
 
+// 소셜 로그인 세션 처리 미들웨어
+export const clearSessionForNewSocialLogin = (req, res, next) => {
+  // 기존 로그인된 소셜 로그인 계정이 있는 경우 세션 제거
+  if (req.session.loggedIn) {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("세션 삭제 실패:", err);
+        return res.redirect("/login");
+      }
+      // 세션 삭제 후 새로운 소셜 로그인 시도
+      req.session = {}; // 명시적으로 세션을 초기화
+      next(); // 세션이 제거되었으므로 다음 미들웨어로 이동
+    });
+  } else {
+    next(); // 세션이 없으면 다음 미들웨어로 이동
+  }
+};
+
 export const avatarUpload = multer({
   dest: "uploads/avatar",
   limits: {
