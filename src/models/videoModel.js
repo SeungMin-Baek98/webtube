@@ -13,7 +13,6 @@ const videoSchema = new mongoose.Schema({
   hashtags: [{ type: String, trim: true }],
   meta: {
     views: { type: Number, required: true, default: 0 },
-    rating: { type: Number, required: true, default: 0 },
   },
   fileUrl: { type: String, required: true },
   // User 테이블을 직접 참조할 수 있게끔 하기위하여

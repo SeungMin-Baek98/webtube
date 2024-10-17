@@ -14,21 +14,21 @@ export const postJoin = async (req, res) => {
   const existEmail = await userModel.exists({ email });
 
   if (existUsername) {
-    return res.status(400).render("join", {
+    return res.status(404).render("join", {
       pageTitle,
       errorMessage: "귀하의 아이디가 사용중입니다.",
     });
   }
 
   if (existEmail) {
-    return res.status(400).render("join", {
+    return res.status(404).render("join", {
       pageTitle,
       errorMessage: "귀하의 이메일이 사용중입니다.",
     });
   }
 
   if (password !== rePassword) {
-    return res.status(400).render("join", {
+    return res.status(404).render("join", {
       pageTitle,
       errorMessage: "비밀번호가 일치하지 않습니다.",
     });
@@ -46,7 +46,7 @@ export const postJoin = async (req, res) => {
     return res.redirect("/login");
   } catch (error) {
     return res
-      .status(400)
+      .status(404)
       .render("join", { pageTitle, errorMessage: error._message });
   }
 };
@@ -62,13 +62,13 @@ export const postLogin = async (req, res) => {
 
   if (!loginUser) {
     return res
-      .status(400)
+      .status(404)
       .render("login", { pageTitle, errorMessage: "계정이 없습니다." });
   }
 
   const loginPass = await bcrypt.compare(password, loginUser.password);
   if (!loginPass) {
-    return res.status(400).render("login", {
+    return res.status(404).render("login", {
       pageTitle,
       errorMessage: "패스워드가 일치하지않습니다.",
     });
@@ -158,8 +158,6 @@ export const finishGithubLogin = async (req, res) => {
     // 깃허브의 계정이 있으면 그 계정을 토대로 로그인이 가능하다.
     let user = await userModel.findOne({ email: emailObj.email });
     if (!user) {
-      // 깃허브 게정이 db에 없을경우
-      // 버튼 클릭시 깃허브 계정으로 로그인 하는 코드
       user = await userModel.create({
         email: emailObj.email,
         username: userData.login,
@@ -274,14 +272,14 @@ export const postEdit = async (req, res) => {
 
   const existUsername = await userModel.exists({ username, _id: { $ne: _id } });
   if (existUsername) {
-    return res.status(400).render("edit", {
+    return res.status(404).render("edit", {
       pageTitle: "Edit Profile",
       errorMessage: "귀하의 이메일이 사용중입니다.",
     });
   }
   const existEmail = await userModel.exists({ email, _id: { $ne: _id } });
   if (existEmail) {
-    return res.status(400).render("edit", {
+    return res.status(404).render("edit", {
       pageTitle: "Edit Profile",
       errorMessage: "귀하의 이메일이 사용중입니다.",
     });

@@ -11,12 +11,7 @@ import {
   postChangePassword,
 } from "../controllers/userController";
 
-import {
-  avatarUpload,
-  clearSessionForNewSocialLogin,
-  protectorMiddleware,
-  publicOnlyMiddleware,
-} from "../middlewares";
+import { avatarUpload, protectorMiddleware } from "../middlewares";
 
 import express from "express";
 
@@ -29,12 +24,8 @@ userRouter.get("/github/start", startGithubLogin);
 userRouter.get("/github/finish", finishGithubLogin);
 
 //카카오 로그인 라우터
-userRouter.get("/kakao/start", clearSessionForNewSocialLogin, startKaKaoLogin);
-userRouter.get(
-  "/kakao/finish",
-  clearSessionForNewSocialLogin,
-  finishKaKaoLogin
-);
+userRouter.get("/kakao/start", startKaKaoLogin);
+userRouter.get("/kakao/finish", finishKaKaoLogin);
 
 //유저 프로필 편집 라우터
 userRouter
