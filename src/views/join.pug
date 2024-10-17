@@ -1,8 +1,9 @@
 extends base.pug
 
 block content 
-    if errorMessage 
-        span=errorMessage 
+    div.error-message
+        if errorMessage 
+            span=errorMessage 
 
     form(method="POST")
         input(name="name", type="text",  placeholder="성함" , required) 

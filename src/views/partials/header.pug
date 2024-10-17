@@ -19,7 +19,8 @@ header
                         if loggedInUser.avatarUrl === undefined
                             span #{loggedInUser.name} 님의 프로필
                         else 
-                            img.header__avatar(src="/" + loggedInUser.avatarUrl)
+                            //- img.header__avatar(src="/" + loggedInUser.avatarUrl)
+                            img.header__avatar(src=loggedInUser.avatarUrl)
             else 
                 li 
                     a(href="/login") Login

@@ -1,15 +1,16 @@
 extends base.pug
 
 block content
-    if errorMessage 
-        span=errorMessage
+        div.error-message
+            if errorMessage     
+                span=errorMessage
 
-    form(method="POST")
-        input(name="username" type="text" placeholder="Username" required)
-        input(name="password" type="password" placeholder="Passowrd" required)
-        input(type="submit", value="로그인")
-        include partials/social-login
-    div.auth-switch
-        span 계정이 없으십니까?
-        div
-            a(href="join") 회원가입 하러가기 &rarr;
+        form(method="POST")
+            input(name="username" type="text" placeholder="Username" required)
+            input(name="password" type="password" placeholder="Passowrd" required)
+            input(type="submit", value="로그인")
+            include partials/social-login
+        div.auth-switch
+            span 계정이 없으십니까?
+            div
+                a(href="join") 회원가입 하러가기 &rarr;

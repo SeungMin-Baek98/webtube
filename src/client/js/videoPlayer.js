@@ -120,6 +120,14 @@ const handleMouseLeave = () => {
   controlsTimeout = setTimeout(hideControls, 3000);
 };
 
+const handleEnded = () => {
+  const { id } = videoContainer.dataset;
+  //기본적으로 fetch()는 get()방식이다.
+  //하지만 apiROuter에서 조회수 로직의 방식을 post로 하였으므로
+  //fetch의 method를 post로 재정의한다.
+  fetch(`/api/videos/${id}/view`, { method: "POST" });
+};
+
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 fullScreenBtn.addEventListener("click", handleFullScreen);
@@ -127,6 +135,7 @@ fullScreenBtn.addEventListener("click", handleFullScreen);
 volumeRange.addEventListener("input", handleVolumeChange);
 timeline.addEventListener("input", handleTimelineChange);
 
+video.addEventListener("ended", handleEnded);
 video.addEventListener("loadedmetadata", handleLoadedMetaData);
 video.addEventListener("timeupdate", handleTimeUpDate);
 videoContainer.addEventListener("mousemove", handleMouseMove);
