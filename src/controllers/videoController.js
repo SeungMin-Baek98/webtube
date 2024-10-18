@@ -58,6 +58,7 @@ export const postEdit = async (req, res) => {
   }
 
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "게시글의 작성자만 편집할 수 있습니다.");
     return res.status(403).redirect("/");
   }
 
@@ -66,7 +67,7 @@ export const postEdit = async (req, res) => {
     description,
     hashtags: videoModel.formatHashtags(hashtags),
   });
-
+  req.flash("success", "게시글 업데이트 완료");
   return res.redirect(`/videos/${id}`);
 };
 
@@ -78,13 +79,14 @@ export const postUpload = async (req, res) => {
   const {
     user: { _id },
   } = req.session;
-  const file = req.file;
+  const { video, thumb } = req.files;
   const { title, description, hashtags } = req.body;
 
   // video생성에 문제가 없다면 / <- Home 페이지로 리다이렉트 될 것 이다.
   try {
     const newVideo = await videoModel.create({
-      fileUrl: file.path,
+      fileUrl: video[0].path,
+      thumbUrl: thumb[0].path,
       title,
       owner: _id,
       description,
@@ -93,6 +95,7 @@ export const postUpload = async (req, res) => {
     const user = await userModel.findById(_id);
     user.videos.unshift(newVideo._id);
     user.save();
+    req.flash("success", "게시글이 생성되었습니다.");
     return res.redirect("/");
   } catch (error) {
     // 오류가 있다면 upload 페이지에 남아 있을 것 이다.
@@ -114,10 +117,11 @@ export const deleteVideo = async (req, res) => {
   const loginUser = await userModel.findById(_id);
 
   if (!video) {
-    return res.status(404).render("404", { pageTitle: "VIdeo not found." });
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   }
 
   if (String(video.owner) !== String(_id)) {
+    req.flash("error", "게시글의 작성자만 삭제할 수 있습니다.");
     return res.status(403).redirect("/");
   }
 

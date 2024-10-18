@@ -77,7 +77,7 @@ export const postLogin = async (req, res) => {
   // 실질적으로 로그인을 하게 하는 코드
   req.session.loggedIn = true;
   req.session.user = loginUser;
-
+  req.flash("info", "로그인 되었습니다.");
   return res.redirect("/");
 };
 
@@ -171,7 +171,7 @@ export const finishGithubLogin = async (req, res) => {
 
     req.session.loggedIn = true;
     req.session.user = user;
-
+    req.flash("success", "로그인 하였습니다.");
     return res.redirect("/");
   } else {
     return res.redirect("/login");
@@ -242,15 +242,17 @@ export const finishKaKaoLogin = async (req, res) => {
     // 새로운 세션에 사용자 정보 저장
     req.session.loggedIn = true;
     req.session.user = user;
-
+    req.flash("success", "로그인 하였습니다.");
     return res.redirect("/");
   } else {
     // 액세스 토큰 요청 실패 시
+    req.flash("error", "로그인에 실패하였습니다.");
     return res.redirect("/login");
   }
 };
 
 export const logout = (req, res) => {
+  req.flash("logout", "로그아웃 되었습니다.");
   req.session.destroy();
   return res.redirect("/");
 };
@@ -297,6 +299,7 @@ export const postEdit = async (req, res) => {
     { new: true }
   );
   req.session.user = updateUser;
+  req.flash("info", "프로필을 업데이트 하였습니다.");
   return res.redirect("/users/edit");
 };
 
@@ -329,6 +332,7 @@ export const postChangePassword = async (req, res) => {
   const user = await userModel.findById(_id);
   user.password = newPassword;
   await user.save();
+  req.flash("info", "비밀번호가 변경되었습니다.");
   return res.redirect("/users/logout");
 };
 
