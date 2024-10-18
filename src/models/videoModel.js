@@ -7,7 +7,7 @@ const videoSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    minLength: 20,
+    minLength: 2,
   },
   createdAt: { type: Date, required: true, default: Date.now },
   hashtags: [{ type: String, trim: true }],
@@ -15,6 +15,7 @@ const videoSchema = new mongoose.Schema({
     views: { type: Number, required: true, default: 0 },
   },
   fileUrl: { type: String, required: true },
+  thumbUrl: { type: String, required: true },
   // User 테이블을 직접 참조할 수 있게끔 하기위하여
   // mongoose에서 제공하는 내장함수인 populate()를 통하여
   // 코드의 간소화를 할 수 있다.

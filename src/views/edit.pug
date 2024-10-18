@@ -1,9 +1,10 @@
 extends base.pug
 
 block content       
-    h4  Change Title of #{video.title}
-    form(method="POST")
-        input(name="title", placeholder="Title", type="text", maxlength=80, value=video.title, required)
-        input(name="description", placeholder="Description", type="text", value=video.description, minlength=20, required)
-        input(name="hashtags", placeholder="Hastagas, seperated by comma.", type="text", value=video.hashtags.join(), required)
-        input(value="save", type="submit")
+    div
+        h4 Change Title of #{video.title}
+        form(method="POST")
+            input(name="title", placeholder="Title", type="text", maxlength=80, value=video.title, required)
+            input(name="description", placeholder="Description", type="text", value=video.description, minlength=20, required)
+            input(name="hashtags", placeholder="Hastagas, seperated by comma.", type="text", value=video.hashtags.join(), required)
+            input(value="save", type="submit")
